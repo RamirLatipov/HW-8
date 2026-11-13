@@ -11,10 +11,20 @@ class BankAccount
 
     public BankAccount(decimal balance, AccountType type)
     {
-        number = nextNumber++;
-        this.balance = balance;
-        this.type = type;
+        number = GenerateNumber();
+        SetBalance(balance);
+        SetType(type);
     }
+    private static int GenerateNumber() { return nextNumber++; }
+    public int GetNumber() { return number; }
+    public decimal GetBalance() { return balance; }
+    public AccountType GetAccountType() { return type; }
+    public void SetBalance(decimal value)
+    {
+        if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+        balance = value;
+    }
+    public void SetType(AccountType value) { type = value; }
     public void Deposit(decimal amount) { if (amount > 0) balance += amount; }
     public bool Withdraw(decimal amount)
     {
@@ -29,7 +39,11 @@ class BankAccount
         Deposit(amount);
         return true;
     }
-    public void Print() { Console.WriteLine($"Счет №{number}, тип: {type}, баланс: {balance}"); }
+    public void Print()
+    {
+        string typeName = GetAccountType() == AccountType.Current ? "текущий" : "сберегательный";
+        Console.WriteLine($"Счёт №{GetNumber()}, тип: {typeName}, баланс: {GetBalance()}");
+    }
 }
 
 static class Exercise81
@@ -40,7 +54,7 @@ static class Exercise81
         BankAccount first = new BankAccount(1000, AccountType.Current);
         BankAccount second = new BankAccount(200, AccountType.Savings);
         first.Print(); second.Print();
-        Console.WriteLine("Перевод 300 со первого счета на второй: " + (second.TransferFrom(first, 300) ? "выполнен" : "отклонен"));
+        Console.WriteLine("Перевод 300 с первого счёта на второй: " + (second.TransferFrom(first, 300) ? "выполнен" : "отклонен"));
         first.Print(); second.Print();
         Console.WriteLine("Попытка перевести 2000: " + (second.TransferFrom(first, 2000) ? "выполнена" : "недостаточно средств или неверная сумма"));
     }
